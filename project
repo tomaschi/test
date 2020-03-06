@@ -1,0 +1,1297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project name="myNetconfService" soapui-version="4.6.1" abortOnError="false" runType="SEQUENTIAL" activeEnvironment="Default" resourceRoot="" id="37635d8f-1cf4-4b1d-aacd-f726c1685f03" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="netconfBinding" type="wsdl" bindingName="{urn:ietf:params:xml:ns:netconf:soap:1.0}netconfBinding" soapVersion="1_2" anonymous="optional" definition="http://localhost/myNetconfService.wsdl" id="fa2a62b5-90a7-41cb-aab3-da891f26578b" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost/myNetconfService.wsdl"><con:part><con:url>http://localhost/myNetconfService.wsdl</con:url><con:content><![CDATA[<definitions targetNamespace="urn:myNetconfService" name="myNetconfService.wsdl" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:SOAP="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:nets="urn:ietf:params:xml:ns:netconf:soap:1.0">
+  <import namespace="urn:ietf:params:xml:ns:netconf:soap:1.0" location="http://localhost/netconf-soap_1.0.wsdl"/>
+  <service name="netconf">
+    <port name="netconfPort" binding="nets:netconfBinding">
+      <SOAP:address location="http://st.leopard.zrz/soap/netconf"/>
+    </port>
+  </service>
+</definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost/netconf-soap_1.0.wsdl</con:url><con:content><![CDATA[<definitions targetNamespace="urn:ietf:params:xml:ns:netconf:soap:1.0" name="netconf-soap_1.0.wsdl" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:SOAP="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="urn:ietf:params:xml:ns:netconf:soap:1.0" xmlns:netb="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <import namespace="urn:ietf:params:xml:ns:netconf:base:1.0" location="http://localhost/netconf.xsd"/>
+  <message name="helloRequest">
+    <part name="in" element="netb:hello"/>
+  </message>
+  <message name="helloResponse">
+    <part name="out" element="netb:hello"/>
+  </message>
+  <message name="rpcRequest">
+    <part name="in" element="netb:rpc"/>
+  </message>
+  <message name="rpcResponse">
+    <part name="out" element="netb:rpc-reply"/>
+  </message>
+  <portType name="netconfPortType">
+    <operation name="rpc">
+      <input message="tns:rpcRequest"/>
+      <output message="tns:rpcResponse"/>
+    </operation>
+    <operation name="hello">
+      <input message="tns:helloRequest"/>
+      <output message="tns:helloResponse"/>
+    </operation>
+  </portType>
+  <binding name="netconfBinding" type="tns:netconfPortType">
+    <SOAP:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="hello">
+      <SOAP:operation/>
+      <input>
+        <SOAP:body use="literal" namespace="urn:ietf:params:xml:ns:netconf:soap:1.0"/>
+      </input>
+      <output>
+        <SOAP:body use="literal" namespace="urn:ietf:params:xml:ns:netconf:soap:1.0"/>
+      </output>
+    </operation>
+    <operation name="rpc">
+      <SOAP:operation/>
+      <input>
+        <SOAP:body use="literal" namespace="urn:ietf:params:xml:ns:netconf:base:1.0"/>
+      </input>
+      <output>
+        <SOAP:body use="literal" namespace="urn:ietf:params:xml:ns:netconf:base:1.0"/>
+      </output>
+    </operation>
+  </binding>
+</definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost/netconf.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="urn:ietf:params:xml:ns:netconf:base:1.0" elementFormDefault="qualified" attributeFormDefault="unqualified" xml:lang="en" version="1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <xs:annotation>
+    <xs:documentation>This schema defines the syntax for the NETCONF Messages layer
+      messages 'hello', 'rpc', and 'rpc-reply'.</xs:documentation>
+  </xs:annotation>
+  <!--import standard XML definitions-->
+  <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://localhost/xml.xsd">
+    <xs:annotation>
+      <xs:documentation>This import accesses the xml: attribute groups for the
+        xml:lang as declared on the error-message element.</xs:documentation>
+    </xs:annotation>
+  </xs:import>
+  <!--message-id attribute-->
+  <xs:simpleType name="messageIdType">
+    <xs:restriction base="xs:string">
+      <xs:maxLength value="4095"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <!--Types used for session-id-->
+  <xs:simpleType name="SessionId">
+    <xs:restriction base="xs:unsignedInt">
+      <xs:minInclusive value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="SessionIdOrZero">
+    <xs:restriction base="xs:unsignedInt"/>
+  </xs:simpleType>
+  <!--<rpc> element-->
+  <xs:complexType name="rpcType">
+    <xs:sequence>
+      <xs:element ref="rpcOperation"/>
+    </xs:sequence>
+    <xs:attribute name="message-id" type="messageIdType" use="required"/>
+    <!--Arbitrary attributes can be supplied with <rpc> element.-->
+    <xs:anyAttribute processContents="lax"/>
+  </xs:complexType>
+  <xs:element name="rpc" type="rpcType"/>
+  <!--data types and elements used to construct rpc-errors-->
+  <xs:simpleType name="ErrorType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="transport"/>
+      <xs:enumeration value="rpc"/>
+      <xs:enumeration value="protocol"/>
+      <xs:enumeration value="application"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ErrorTag">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="in-use"/>
+      <xs:enumeration value="invalid-value"/>
+      <xs:enumeration value="too-big"/>
+      <xs:enumeration value="missing-attribute"/>
+      <xs:enumeration value="bad-attribute"/>
+      <xs:enumeration value="unknown-attribute"/>
+      <xs:enumeration value="missing-element"/>
+      <xs:enumeration value="bad-element"/>
+      <xs:enumeration value="unknown-element"/>
+      <xs:enumeration value="unknown-namespace"/>
+      <xs:enumeration value="access-denied"/>
+      <xs:enumeration value="lock-denied"/>
+      <xs:enumeration value="resource-denied"/>
+      <xs:enumeration value="rollback-failed"/>
+      <xs:enumeration value="data-exists"/>
+      <xs:enumeration value="data-missing"/>
+      <xs:enumeration value="operation-not-supported"/>
+      <xs:enumeration value="operation-failed"/>
+      <xs:enumeration value="partial-operation"/>
+      <xs:enumeration value="malformed-message"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="ErrorSeverity">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="error"/>
+      <xs:enumeration value="warning"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:complexType name="errorInfoType">
+    <xs:sequence>
+      <xs:choice>
+        <xs:element name="session-id" type="SessionIdOrZero"/>
+        <xs:sequence minOccurs="0" maxOccurs="unbounded">
+          <xs:sequence>
+            <xs:element name="bad-attribute" type="xs:QName" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="bad-element" type="xs:QName" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="ok-element" type="xs:QName" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="err-element" type="xs:QName" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="noop-element" type="xs:QName" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="bad-namespace" type="xs:string" minOccurs="0" maxOccurs="1"/>
+          </xs:sequence>
+        </xs:sequence>
+      </xs:choice>
+      <!--elements from any other namespace are also allowed
+           to follow the NETCONF elements-->
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="rpcErrorType">
+    <xs:sequence>
+      <xs:element name="error-type" type="ErrorType"/>
+      <xs:element name="error-tag" type="ErrorTag"/>
+      <xs:element name="error-severity" type="ErrorSeverity"/>
+      <xs:element name="error-app-tag" type="xs:string" minOccurs="0"/>
+      <xs:element name="error-path" type="xs:string" minOccurs="0"/>
+      <xs:element name="error-message" minOccurs="0">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute ref="xml:lang" use="optional"/>
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="error-info" type="errorInfoType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <!--operation attribute used in <edit-config>-->
+  <xs:simpleType name="editOperationType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="merge"/>
+      <xs:enumeration value="replace"/>
+      <xs:enumeration value="create"/>
+      <xs:enumeration value="delete"/>
+      <xs:enumeration value="remove"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:attribute name="operation" type="editOperationType"/>
+  <!--<rpc-reply> element-->
+  <xs:complexType name="rpcReplyType">
+    <xs:choice>
+      <xs:element name="ok"/>
+      <xs:sequence>
+        <xs:element ref="rpc-error" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element ref="rpcResponse" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:choice>
+    <xs:attribute name="message-id" type="messageIdType" use="optional"/>
+    <!--Any attributes supplied with <rpc> element must be returned
+       on <rpc-reply>.-->
+    <xs:anyAttribute processContents="lax"/>
+  </xs:complexType>
+  <xs:element name="rpc-reply" type="rpcReplyType"/>
+  <!--<rpc-error> element-->
+  <xs:element name="rpc-error" type="rpcErrorType"/>
+  <!--rpcOperationType: used as a base type for all
+     NETCONF operations-->
+  <xs:complexType name="rpcOperationType"/>
+  <xs:element name="rpcOperation" type="rpcOperationType" abstract="true"/>
+  <!--rpcResponseType: used as a base type for all
+     NETCONF responses-->
+  <xs:complexType name="rpcResponseType"/>
+  <xs:element name="rpcResponse" type="rpcResponseType" abstract="true"/>
+  <!--<hello> element-->
+  <xs:element name="hello">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="capabilities">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="capability" type="xs:anyURI" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="session-id" type="SessionId" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost/xml.xsd</con:url><con:content><![CDATA[<!DOCTYPE xs:schema PUBLIC "-//W3C//DTD XMLSCHEMA 200102//EN" "XMLSchema.dtd">
+<xs:schema targetNamespace="http://www.w3.org/XML/1998/namespace" xml:lang="en" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:annotation>
+    <xs:documentation>See http://www.w3.org/XML/1998/namespace.html and
+   http://www.w3.org/TR/REC-xml for information about this namespace.
+
+    This schema document describes the XML namespace, in a form
+    suitable for import by other schema documents.  
+
+    Note that local names in this namespace are intended to be defined
+    only by the World Wide Web Consortium or its subgroups.  The
+    following names are currently defined in this namespace and should
+    not be used with conflicting semantics by any Working Group,
+    specification, or document instance:
+
+    base (as an attribute name): denotes an attribute whose value
+         provides a URI to be used as the base for interpreting any
+         relative URIs in the scope of the element on which it
+         appears; its value is inherited.  This name is reserved
+         by virtue of its definition in the XML Base specification.
+
+    lang (as an attribute name): denotes an attribute whose value
+         is a language code for the natural language of the content of
+         any element; its value is inherited.  This name is reserved
+         by virtue of its definition in the XML specification.
+  
+    space (as an attribute name): denotes an attribute whose
+         value is a keyword indicating what whitespace processing
+         discipline is intended for the content of the element; its
+         value is inherited.  This name is reserved by virtue of its
+         definition in the XML specification.
+
+    Father (in any context at all): denotes Jon Bosak, the chair of 
+         the original XML Working Group.  This name is reserved by 
+         the following decision of the W3C XML Plenary and 
+         XML Coordination groups:
+
+             In appreciation for his vision, leadership and dedication
+             the W3C XML Plenary on this 10th day of February, 2000
+             reserves for Jon Bosak in perpetuity the XML name
+             xml:Father</xs:documentation>
+  </xs:annotation>
+  <xs:annotation>
+    <xs:documentation>This schema defines attributes and an attribute group
+        suitable for use by
+        schemas wishing to allow xml:base, xml:lang or xml:space attributes
+        on elements they define.
+
+        To enable this, such a schema must import this schema
+        for the XML namespace, e.g. as follows:
+        &lt;schema . . .>
+         . . .
+         &lt;import namespace="http://www.w3.org/XML/1998/namespace"
+                    schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
+
+        Subsequently, qualified reference to any of the attributes
+        or the group defined below will have the desired effect, e.g.
+
+        &lt;type . . .>
+         . . .
+         &lt;attributeGroup ref="xml:specialAttrs"/>
+ 
+         will define a type which will schema-validate an instance
+         element with any of those attributes</xs:documentation>
+  </xs:annotation>
+  <xs:annotation>
+    <xs:documentation>In keeping with the XML Schema WG's standard versioning
+   policy, this schema document will persist at
+   http://www.w3.org/2001/03/xml.xsd.
+   At the date of issue it can also be found at
+   http://www.w3.org/2001/xml.xsd.
+   The schema document at that URI may however change in the future,
+   in order to remain compatible with the latest version of XML Schema
+   itself.  In other words, if the XML Schema namespace changes, the version
+   of this document at
+   http://www.w3.org/2001/xml.xsd will change
+   accordingly; the version at
+   http://www.w3.org/2001/03/xml.xsd will not change.</xs:documentation>
+  </xs:annotation>
+  <xs:attribute name="lang" type="xs:language">
+    <xs:annotation>
+      <xs:documentation>In due course, we should install the relevant ISO 2- and 3-letter
+         codes as the enumerated possible values . . .</xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+  <xs:attribute name="space" default="preserve">
+    <xs:simpleType>
+      <xs:restriction base="xs:NCName">
+        <xs:enumeration value="default"/>
+        <xs:enumeration value="preserve"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+  <xs:attribute name="base" type="xs:anyURI">
+    <xs:annotation>
+      <xs:documentation>See http://www.w3.org/TR/xmlbase/ for
+                     information about this attribute.</xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+  <xs:attributeGroup name="specialAttrs">
+    <xs:attribute ref="xml:base"/>
+    <xs:attribute ref="xml:lang"/>
+    <xs:attribute ref="xml:space"/>
+  </xs:attributeGroup>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>https://169.254.135.123/soap/netconf/</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="hello" bindingOperationName="hello" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional" id="2330d263-ef80-411a-8e2e-6b753cbd2c06"><con:settings/></con:operation><con:operation isOneWay="false" action="" name="rpc" bindingOperationName="rpc" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional" id="fd78bf3d-917a-46e8-baba-04f99326dd2d"><con:settings/></con:operation></con:interface><con:testSuite name="TestSuite 1" id="faff971f-a59a-46a8-b3c0-eb3356063738"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="TestCase 1" searchProperties="true" id="7f7fbe52-8038-41fc-aceb-326d9e503756"><con:settings/><con:testStep type="request" name="hello" id="38b3f0f1-57d9-44f9-8b00-51f8a90a134d"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>hello</con:operation><con:request name="hello" id="73a15919-1db0-4a61-a15a-6570e18609c3"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.67.214/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:UserName>admin</auth:UserName>
+         <auth:Password>admin</auth:Password>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <capabilities>
+            <capability>urn:ietf:params:netconf:base:1.0</capability>
+         </capabilities>
+      </hello>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response" id="30b7cff1-ba4a-40d4-8d42-a22d209c15b8"/><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="transfer" name="AuthInfo_trans" id="045c62ae-c7e5-4a4a-94bb-64b4f3b63f29"><con:settings/><con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false"><con:name>AuthInfo</con:name><con:sourceType>Response</con:sourceType><con:sourceStep>hello</con:sourceStep><con:sourcePath>declare namespace auth="http://www.h3c.com/netconf/base:1.0";
+//auth:AuthInfo
+</con:sourcePath><con:targetType>AuthInfo</con:targetType><con:targetStep>#TestCase#</con:targetStep><con:upgraded>true</con:upgraded></con:transfers></con:config></con:testStep><con:testStep type="request" name="get_data" id="bb2ded36-adc7-4aaa-857c-2dd6844574c9"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>hello</con:operation><con:request name="get_data" id="e2d68d18-12b9-4287-b0ae-4e017193e8fd"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.105.10/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>1000106df13782e978c489611a8c247f1280</auth:AuthInfo>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <get>
+            <filter type="subtree">
+               <top xmlns="http://www.h3c.com/netconf/data:1.0" xmlns:web="http://www.h3c.com/netconf/base:1.0">
+
+  <OBJP>
+    <IPv4Rules >
+      <Rule>
+        <SrcZone>
+         </get>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response" id="9254db00-e604-4ac5-b501-d340ea831369"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="get_config" id="fc2e8edd-f231-44b9-8c2d-a6f492ba8c03"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>hello</con:operation><con:request name="get_config" id="e2d68d18-12b9-4287-b0ae-4e017193e8fd"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.56.123/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>${#TestCase#AuthInfo}</auth:AuthInfo>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+     <get-config>
+            <source> <running/></source>
+            <filter type="subtree">
+               <top xmlns="http://www.h3c.com/netconf/config:1.0" xmlns:web="http://www.h3c.com/netconf/base:1.0">
+
+
+<WLOC>
+  <RadioConfOfApgroup>
+    <Radio>
+      <ApGroupName>ggg2</ApGroupName>
+      <ApModelName></ApModelName>
+      <RadioID></RadioID>
+      <RadioStatus></RadioStatus>
+ <ModeTag></ModeTag>
+<ModeMu></ModeMu>
+    </Radio>
+  </RadioConfOfApgroup>
+  </WLOC>
+
+
+               </top>
+            </filter>
+         </get-config>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response" id="3e445724-5887-4650-beff-d03cdef184e2" name="SOAP Response"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="getbulk_data" id="527d7504-05fa-40a3-ac15-32777ed41344"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>hello</con:operation><con:request name="getbulk_data" id="e2d68d18-12b9-4287-b0ae-4e017193e8fd"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.56.123/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>${#TestCase#AuthInfo}</auth:AuthInfo>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <get-bulk>
+            <filter type="subtree">
+               <top xmlns="http://www.h3c.com/netconf/data:1.0" xmlns:web="http://www.h3c.com/netconf/base:1.0">
+
+<WLOC>
+  <CommonConfOfApgroup>
+    <APGroup>
+      <ApGroupName></ApGroupName>
+      <ClientRateLimitStatus></ClientRateLimitStatus>
+      <ClientRateLimitCir></ClientRateLimitCir>
+      <ClientRateLimitCbs></ClientRateLimitCbs>
+      <DilutionStatus></DilutionStatus>
+      <DilutionFactor></DilutionFactor>
+      <DilutionTimeout></DilutionTimeout>
+      <IgnoreBeaconStatus></IgnoreBeaconStatus>
+      <RateLimitStatus></RateLimitStatus>
+      <RateLimitCir></RateLimitCir>
+      <RateLimitCbs></RateLimitCbs>	
+      <RssiStatus></RssiStatus>
+      <RssiThreshold></RssiThreshold>
+    </APGroup>
+  </CommonConfOfApgroup>
+</WLOC>
+
+
+
+               </top>
+            </filter>
+         </get-bulk>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response" id="9254db00-e604-4ac5-b501-d340ea831369"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="getbulk_config" id="5d81345f-7d52-4e5e-95c6-ac46f6dd35f0"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>hello</con:operation><con:request name="getbulk_config" id="e2d68d18-12b9-4287-b0ae-4e017193e8fd"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.56.123/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>${#TestCase#AuthInfo}</auth:AuthInfo>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+     <get-bulk-config>
+            <source> <running/></source>
+            <filter type="subtree">
+               <top xmlns="http://www.h3c.com/netconf/config:1.0" xmlns:web="http://www.h3c.com/netconf/base:1.0">
+
+<WLOC>
+  <CommonConfOfApgroup>
+    <APGroup>
+      <ApGroupName></ApGroupName>
+      <ClientRateLimitStatus></ClientRateLimitStatus>
+      <ClientRateLimitCir></ClientRateLimitCir>
+      <ClientRateLimitCbs></ClientRateLimitCbs>
+      <DilutionStatus></DilutionStatus>
+      <DilutionFactor></DilutionFactor>
+      <DilutionTimeout></DilutionTimeout>
+      <IgnoreBeaconStatus></IgnoreBeaconStatus>
+      <RateLimitStatus></RateLimitStatus>
+      <RateLimitCir></RateLimitCir>
+      <RateLimitCbs></RateLimitCbs>	
+      <RssiStatus></RssiStatus>
+      <RssiThreshold></RssiThreshold>
+    </APGroup>
+  </CommonConfOfApgroup>
+</WLOC>
+
+
+
+
+               </top>
+            </filter>
+         </get-bulk-config>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response" id="9254db00-e604-4ac5-b501-d340ea831369"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="create" id="9053d890-4bb2-487f-8760-4d7741c2b0a1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="create" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.101.1/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>1000083680db0dcdc53b1e80c78a18ee1d6e</auth:AuthInfo>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <edit-config>
+            <target>
+               <running/>
+            </target>
+            <config>
+               <top web:operation="create" xmlns="http://www.h3c.com/netconf/config:1.0">
+
+
+        <Ifmgr>
+  <Interfaces>
+    <Interface>
+      <IfIndex>800</IfIndex>
+      <Loopback></Loopback>
+    </Interface>
+  </Interfaces>
+</Ifmgr>
+
+
+
+
+
+
+                  
+               </top>
+            </config>
+         </edit-config>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="merge" id="1a36ea35-ff49-4e21-89dc-85c02725a3c1"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="merge" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.156.240/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>10000353141946b62001d1a2319c93f8e515</auth:AuthInfo>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <edit-config>
+            <target>
+               <running/>
+            </target>
+            <config>
+               <top web:operation="merge" xmlns="http://www.h3c.com/netconf/config:1.0">
+       
+ <SecurityPolicies>
+  <IPv4Rules>
+    <Rule>
+      <ID></ID>
+      <Action>2</Action>
+    </Rule>
+  </IPv4Rules>
+</SecurityPolicies>
+
+
+               </top>
+            </config>
+         </edit-config>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="replace" id="1069ec58-3991-4705-8ff9-4c561ea29c02"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="replace" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.102.17/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>100010754f11c664d68a9624b8e80bed6680</auth:AuthInfo>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <edit-config>
+            <target>
+               <running/>
+            </target>
+            <config>
+               <top web:operation="replace" xmlns="http://www.h3c.com/netconf/config:1.0">
+
+  <OBJP>
+    <IPv4Rules>
+      <Rule>
+        <SrcZone>Local</SrcZone>
+        <DestZone>WABOBYTXZG3P6ZMEF3QFN2CLFQ</DestZone>
+        <ID>0</ID>
+        <InsID>60000</InsID>
+        <Action>1</Action>
+        <VRF>35ggne0ln89cmb00n0s9rsjdnv</VRF>
+        <Enable>true</Enable>
+        <Counting>true</Counting>
+        <Comment>fw</Comment>
+      </Rule>
+    </IPv4Rules>
+  </OBJP>
+
+
+               </top>
+            </config>
+         </edit-config>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="XPath Match" id="d384cf79-afcd-4daf-8678-a9442f090da2" name="Match content of [ok]"><con:configuration><path>declare namespace ns1='urn:ietf:params:xml:ns:netconf:base:1.0';
+//ns1:rpc-reply[1]/ns1:ok[1]</path><content>&lt;ok xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:env="http://www.w3.org/2003/05/soap-envelope"/></content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="delete" id="e746281e-ca14-4e4d-804d-7c3390d5a774"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="delete" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.56.123/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>${#TestCase#AuthInfo}</auth:AuthInfo>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <edit-config>
+            <target>
+               <running/>
+            </target>
+            <config>
+               <top web:operation="delete" xmlns="http://www.h3c.com/netconf/config:1.0">
+
+
+<WLOC>
+  <RadioConfOfApgroup>
+    <Radio>
+      <ApGroupName>ggg2</ApGroupName>
+      <ApModelName>WA2610-GN</ApModelName>
+      <RadioID>1</RadioID>
+      <RadioStatus></RadioStatus>
+
+    </Radio>
+  </RadioConfOfApgroup>
+  </WLOC>
+
+               </top>
+            </config>
+         </edit-config>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="XPath Match" id="d384cf79-afcd-4daf-8678-a9442f090da2" name="Match content of [ok]"><con:configuration><path>declare namespace ns1='urn:ietf:params:xml:ns:netconf:base:1.0';
+//ns1:rpc-reply[1]/ns1:ok[1]</path><content>&lt;ok xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:env="http://www.w3.org/2003/05/soap-envelope"/></content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="remove" id="37ee7ab9-1d93-4285-8893-839ea7d84a42"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="remove" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.156.20/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>10001022ac6bdbe457d6be546a32d78d31e2</auth:AuthInfo>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <edit-config>
+            <target>
+               <running/>
+            </target>
+            <config>
+               <top web:operation="remove" xmlns="http://www.h3c.com/netconf/config:1.0">
+
+  <SecurityZone>
+    <Interfaces >
+      <Interface>
+        <ZoneName>EXTERNAL</ZoneName>
+        <IfIndex>7269</IfIndex>
+      </Interface>
+    </Interfaces>
+  </SecurityZone>
+
+
+
+               </top>
+            </config>
+         </edit-config>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="XPath Match" id="d384cf79-afcd-4daf-8678-a9442f090da2" name="Match content of [ok]"><con:configuration><path>declare namespace ns1='urn:ietf:params:xml:ns:netconf:base:1.0';
+//ns1:rpc-reply[1]/ns1:ok[1]</path><content>&lt;ok xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:env="http://www.w3.org/2003/05/soap-envelope"/></content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="action" id="d2de12cc-4282-4f7a-9a31-efaccc6df074"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="action" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.101.1/soap/netconf/</con:endpoint><con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>1000085b5f10569bc4864bcb86e6ae2ad418</auth:AuthInfo>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+<rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+	<action>
+		<top xmlns="http://www.h3c.com/netconf/action:1.0">
+			
+<Ifmgr>
+					  <SubInterfaces>
+					    <Interface>
+					      <IfIndex>751</IfIndex>
+					      <SubNum>3</SubNum>
+					    </Interface>
+					  </SubInterfaces>
+					</Ifmgr>
+
+	
+
+
+			
+		</top>		
+	</action>
+</rpc>
+
+
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="XPath Match" id="d384cf79-afcd-4daf-8678-a9442f090da2" name="Match content of [ok]"><con:configuration><path>declare namespace ns1='urn:ietf:params:xml:ns:netconf:base:1.0';
+//ns1:rpc-reply[1]/ns1:ok[1]</path><content>&lt;ok xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:env="http://www.w3.org/2003/05/soap-envelope"/></content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="bye" id="0190059e-2889-410c-9a34-15128dc8aa8e"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="bye" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://10.152.3.189/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="true" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>${#TestCase#AuthInfo}</auth:AuthInfo>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <close-session/>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response" id="ee64bdf3-e3c4-4de8-9de9-2d980f7ab0f1"/><con:assertion type="XPath Match" id="8444a888-59b0-4a10-b439-2d48576aa74f" name="Match content of [ok]"><con:configuration><path>declare namespace ns1='urn:ietf:params:xml:ns:netconf:base:1.0';
+//ns1:rpc-reply[1]/ns1:ok[1]</path><content>&lt;ok xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:env="http://www.w3.org/2003/05/soap-envelope"/></content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="Test Request" id="a58dcf06-5325-4aff-8703-02d25b66f467"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>hello</con:operation><con:request name="Test Request" id="d20b694c-50e3-4c82-85af-9e85b0604441"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>https://169.254.135.123/soap/netconf/</con:endpoint><con:request xsi:nil="true"/><con:assertion type="SOAP Response" id="151e45c0-d7b6-4e4f-9854-790ca7c12c0e"/><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="getpppsession" id="2013429b-29ed-40ce-b9e0-da86e8978382"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="getpppsession" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.152.100/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" > 
+  <env:Header>
+     <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+          <auth:AuthInfo>10000285bca602f7f4fb8cd88beacc929149</auth:AuthInfo>
+           <auth:Language>zh-cn</auth:Language> 
+      </auth:Authentication>
+   <Language>zh-cn</Language> 
+   </env:Header>
+   <env:Body>
+   <rpc message-id="${#TestSuite#session-id}" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:xc="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <get>
+    <filter type="subtree">
+     <top xmlns="http://www.h3c.com/netconf/data:1.0" xmlns:h3c="http://www.h3c.com/netconf/base:1.0"  xmlns:reg="http://www.h3c.com/netconf/base:1.0">
+<Ifmgr>
+  <Statistics>
+   <Interface>
+<IfIndex></IfIndex>
+    <Name></Name>
+    <AbbreviatedName></AbbreviatedName>
+    <InOctets></InOctets>
+    <InUcastPkts></InUcastPkts>
+    <InNUcastPkts></InNUcastPkts>
+    <InDiscards></InDiscards>
+    <InErrors></InErrors>
+    <InUnknownProtos></InUnknownProtos>
+    <InRate></InRate>
+    <OutOctets></OutOctets>
+    <OutUcastPkts></OutUcastPkts>
+    <OutNUcastPkts></OutNUcastPkts>
+    <OutDiscards></OutDiscards>
+    <OutErrors></OutErrors>
+    <OutRate></OutRate>
+    <LastClear></LastClear>
+   </Interface>
+  </Statistics>
+</Ifmgr>
+
+<Device>
+  <ExtPhysicalEntities>
+    <Entity>
+      <PhysicalIndex></PhysicalIndex>
+      <AdminState></AdminState>
+      <OperState></OperState>
+      <StandbyState></StandbyState>
+      <AlarmLight></AlarmLight>
+      <CpuUsage ></CpuUsage>
+      <CpuUsageThreshold></CpuUsageThreshold>
+      <MemUsage></MemUsage>
+      <MemUsageThreshold></MemUsageThreshold>
+      <MemSize></MemSize>
+      <Uptime></Uptime>
+      <Temperature></Temperature>
+      <TemperatureThreshold></TemperatureThreshold>
+      <Voltage></Voltage>
+      <VoltageLowThreshold></VoltageLowThreshold>
+      <VoltageHighThreshold></VoltageHighThreshold>
+      <TemperatureCriticalThreshold></TemperatureCriticalThreshold>
+      <MAC></MAC>
+      <ErrorStatus></ErrorStatus>
+      <CpuMaxUsage></CpuMaxUsage>
+      <TemperatureLowThreshold></TemperatureLowThreshold>
+      <TemperatureShutdownThreshold></TemperatureShutdownThreshold>
+      <PhyMemSize></PhyMemSize>
+      <CpuFrequency></CpuFrequency>
+      <FristUsedDate></FristUsedDate>
+      <CpuAvgUsage></CpuAvgUsage>
+      <MemAvgUsage></MemAvgUsage>
+      <MemType></MemType>
+    </Entity>
+  </ExtPhysicalEntities >
+</Device>
+<Ifmgr>
+  <Ports>
+    <Port>
+      <PortIndex></PortIndex>
+      <Name></Name>
+      <IfIndex></IfIndex>
+    </Port>
+  </Ports>
+</Ifmgr>
+<Ifmgr>
+  <TrafficStatistics>
+   <Interfaces>
+    <Interface>
+      <IfIndex></IfIndex>
+      <Name></Name>
+      <Interval></Interval>
+      <InPkts></InPkts>
+      <OutPkts></OutPkts>
+      <InOctets></InOctets>
+      <OutOctets></OutOctets>
+      <InBits></InBits>
+      <OutBits></OutBits>
+    </Interface>
+   </Interfaces>
+  </TrafficStatistics>
+</Ifmgr>
+
+<Ifmgr>
+  <InterfaceCapabilities>
+    <Interface>
+      <IfIndex></IfIndex>
+      <Configurable></Configurable>
+      <Shutdown></Shutdown>
+      <Speed></Speed>
+      <AutoSpeed></AutoSpeed>
+      <Duplex></Duplex>
+      <PortLayer></PortLayer>
+      <Loopback></Loopback>
+      <MDI></MDI>
+      <Bandwidth></Bandwidth>
+      <MinMTU></MinMTU>
+      <MaxMTU></MaxMTU>
+      <MinSubNum></MinSubNum>
+      <MaxSubNum></MaxSubNum>
+      <MaxCreateSubNum></MaxCreateSubNum>
+      <ContextAllocType></ContextAllocType>
+      <Removable></Removable>
+      <Interval></Interval>
+      <ForceUP></ForceUP>
+      <LoopbackAutoStop></LoopbackAutoStop>
+    </Interface>
+  </InterfaceCapabilities>
+</Ifmgr>
+<Session>
+  <SessionStatistics>
+    <SessionStatistic>
+      <Chassis></Chassis>
+      <Slot></Slot>
+      <CPUID></CPUID>
+      <CurSessionCount></CurSessionCount>
+      <CurRelationCount></CurRelationCount>
+      <SessionCount>
+        <TCPCount></TCPCount>
+        <UDPCount></UDPCount>
+        <ICMPCount></ICMPCount>
+        <ICMPv6Count></ICMPv6Count>
+        <UDPLiteCount></UDPLiteCount>
+        <SCTPCount></SCTPCount>
+        <DCCPCount></DCCPCount>
+        <RawIPCount></RawIPCount>
+      </SessionCount>
+      <SessionEstablishedRate>
+        <TCPRate></TCPRate>
+        <UDPRate></UDPRate>
+        <ICMPRate></ICMPRate>
+        <ICMPv6Rate></ICMPv6Rate>
+        <UDPLiteRate></UDPLiteRate>
+        <SCTPRate></SCTPRate>
+        <DCCPRate></DCCPRate>
+        <RawIPRate></RawIPRate>
+      </SessionEstablishedRate>
+      <ReceivedPktsBytes>
+        <TCPBytes></TCPBytes>
+        <TCPPkts></TCPPkts>
+        <UDPBytes></UDPBytes>
+        <UDPPkts></UDPPkts>
+        <ICMPBytes></ICMPBytes>
+        <ICMPPkts></ICMPPkts>
+        <ICMPv6Bytes></ICMPv6Bytes>
+        <ICMPv6Pkts></ICMPv6Pkts>
+        <UDPLiteBytes></UDPLiteBytes>
+        <UDPLitePkts></UDPLitePkts>
+        <SCTPBytes></SCTPBytes>
+        <SCTPPkts></SCTPPkts>
+        <DCCPBytes></DCCPBytes>
+        <DCCPPkts></DCCPPkts>
+        <RawIPBytes></RawIPBytes>
+        <RawIPPkts></RawIPPkts>
+      </ReceivedPktsBytes>
+    </SessionStatistic>
+  </SessionStatistics>
+</Session>
+<Session>
+  <HistoryStatistics>
+    <Item>
+      <Chassis></Chassis>
+      <Slot></Slot>
+      <CPUID></CPUID>
+      <Period></Period>
+      <Sequence></Sequence>
+      <Time></Time>
+      <SessionCount></SessionCount>
+      <EstablishedRate></EstablishedRate>
+    </Item>
+  </HistoryStatistics>
+</Session>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      </top>
+    </filter>
+   </get>
+   </rpc>
+</env:Body>
+</env:Envelope>
+]]></con:request><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="configtest" id="10ff90a6-cdee-4fe4-90f7-00f1efb433b6"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="configtest" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.152.28/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>100003b5ec5125f90fbb14d3188677e7a97a</auth:AuthInfo>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+
+   
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+       
+             <CLI>
+             <Configuration>
+       
+monitor process  dumbtty 
+             </Configuration>  
+
+             </CLI>
+
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="getTest" id="973203de-d6bf-484b-b5c7-eca4a2a5e5ea"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="getTest" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.101.1/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" > 
+  <env:Header>
+     <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+          <auth:AuthInfo>10000826fe3d97fa6a7ac6a5f92d9f9c7c9a</auth:AuthInfo>
+           <auth:Language>zh-cn</auth:Language> 
+      </auth:Authentication>
+   <Language>zh-cn</Language> 
+   </env:Header>
+   <env:Body>
+   <rpc message-id="${#TestSuite#session-id}" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:xc="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <get>
+    <filter type="subtree">
+<top xmlns="http://www.h3c.com/netconf/data:1.0" xmlns:web="http://www.h3c.com/netconf/data:1.0">
+<Ifmgr>
+  <Interfaces>
+    <Interface>
+      <IfIndex></IfIndex>
+      <Name></Name>
+    </Interface>
+  </Interfaces>
+</Ifmgr>
+
+
+
+
+</top>
+    </filter>
+   </get>
+   </rpc>
+</env:Body>
+</env:Envelope>
+]]></con:request><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="getLink" id="336dd12f-85d5-4194-8f1a-6a2f0abe4ba5"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="getLink" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.152.35/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" > 
+  <env:Header>
+     <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+          <auth:AuthInfo>100001d9a66e8914d4fe9b5e0b8893b3cd9c</auth:AuthInfo>
+           <auth:Language>zh-cn</auth:Language> 
+      </auth:Authentication>
+   <Language>zh-cn</Language> 
+   </env:Header>
+   <env:Body>
+   <rpc message-id="${#TestSuite#session-id}" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:xc="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <get>
+    <filter type="subtree">
+     <top xmlns="http://www.h3c.com/netconf/data:1.0" xmlns:h3c="http://www.h3c.com/netconf/base:1.0"  xmlns:reg="http://www.h3c.com/netconf/base:1.0">
+
+<Device>
+  <PhysicalEntities>
+    <Entity>
+      
+    </Entity>
+  </PhysicalEntities>
+</Device>
+
+
+   
+
+
+
+
+      </top>
+    </filter>
+   </get>
+   </rpc>
+</env:Body>
+</env:Envelope>
+]]></con:request><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="getconfig" id="b907cb44-0e8b-4755-99a1-0dd14a6f9be2"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="getconfig" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.152.29/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>1000014317191ea97fa431125a2d40331495</auth:AuthInfo>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <get-config>
+            <source>
+               <running/>
+            </source>
+            <config>
+               <top web:operation="create" xmlns="http://www.h3c.com/netconf/config:1.0">
+
+
+  
+
+
+                  
+               </top>
+            </config>
+         </get-config>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="createaction" id="b050c3c3-25bf-40f7-b214-927c7324f5ab"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="createaction" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.152.35/soap/netconf/</con:endpoint><con:request><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>100001158a8ae3703ffdfece933ce7aa424a</auth:AuthInfo>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+<rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+	<action>
+		<top xmlns="http://www.h3c.com/netconf/action:1.0">
+	<Ifmgr>
+  <LogicInterfaces>
+    <Interface>
+      <IfTypeExt>16</IfTypeExt>
+      <Number>1</Number>
+    </Interface>
+  </LogicInterfaces>
+</Ifmgr>
+
+
+
+			
+		</top>		
+	</action>
+</rpc>
+
+
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="XPath Match" id="d384cf79-afcd-4daf-8678-a9442f090da2" name="Match content of [ok]"><con:configuration><path>declare namespace ns1='urn:ietf:params:xml:ns:netconf:base:1.0';
+//ns1:rpc-reply[1]/ns1:ok[1]</path><content>&lt;ok xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:env="http://www.w3.org/2003/05/soap-envelope"/></content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="hellomessage" id="a6bfe878-abe4-45a6-b5ac-87d2729fa575"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>hello</con:operation><con:request name="hellomessage" id="73a15919-1db0-4a61-a15a-6570e18609c3"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.102.17/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:UserName>default</auth:UserName>
+         <auth:Password>default</auth:Password>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <capabilities>
+            <capability>urn:ietf:params:netconf:base:1.0</capability>
+         </capabilities>
+      </hello>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response" id="30b7cff1-ba4a-40d4-8d42-a22d209c15b8"/><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="helloTest" id="3d27dfaa-08f5-4f82-88af-2a2674bf3315"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>hello</con:operation><con:request name="helloTest" id="73a15919-1db0-4a61-a15a-6570e18609c3"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.40.79/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:UserName>root</auth:UserName>
+         <auth:Password>123456</auth:Password>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <hello xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <capabilities>
+            <capability>urn:ietf:params:netconf:base:1.0</capability>
+         </capabilities>
+      </hello>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response" id="30b7cff1-ba4a-40d4-8d42-a22d209c15b8"/><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="mergeTest" id="200c9715-686c-4415-a09f-7e6774da1bfb"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="mergeTest" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.101.1/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>10000826fe3d97fa6a7ac6a5f92d9f9c7c9a</auth:AuthInfo>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <edit-config>
+            <target>
+               <running/>
+            </target>  
+            <config>
+            <top web:operation="merge" xmlns="http://www.h3c.com/netconf/config:1.0">
+				<SecurityZone>
+    <Interfaces>
+      <Interface>
+        <ZoneName>ingressZone_1</ZoneName>
+        <IfIndex>1046</IfIndex>
+      </Interface>
+    </Interfaces>
+  </SecurityZone>
+  <SecurityZone>
+    <Interfaces>
+      <Interface>
+        <ZoneName>egressZone_2</ZoneName>
+        <IfIndex>534</IfIndex>
+      </Interface>
+    </Interfaces>
+  </SecurityZone>
+ 		</top>
+
+            </config>
+         </edit-config>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="Invalid HTTP Status Codes" name="Invalid HTTP Status Codes" id="312c6bef-2b61-4a95-8a2e-7344a10fbfb9"><con:configuration><codes/></con:configuration></con:assertion><con:assertion type="Simple Contains" name="Contains" id="476a4475-5bdb-4cbe-a861-5602b12b8a5c"><con:configuration><token/><ignoreCase>false</ignoreCase><useRegEx>false</useRegEx></con:configuration></con:assertion><con:assertion type="SOAP Response" name="SOAP Response" id="359854f6-6f2a-4510-9027-a6ae3564e455"/><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="mergeT" id="5a8839e1-e6bf-4d68-9db8-3e6dfebb3f1c"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="mergeT" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.101.1/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>1000083680db0dcdc53b1e80c78a18ee1d6e</auth:AuthInfo>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+         <edit-config>
+            <target>
+               <running/>
+            </target>
+            <config>
+              <top web:operation="merge" xmlns="http://www.h3c.com/netconf/config:1.0">
+			   <Ifmgr>
+			  <Interfaces>
+			    <Interface>
+			      <IfIndex>800</IfIndex>
+			      <Loopback></Loopback>
+			    </Interface>
+			  </Interfaces>
+			</Ifmgr>
+</top>
+
+            </config>
+         </edit-config>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="getData" id="c4907ac3-4fe8-4171-b0b6-31427f9a2ac6"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="getData" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.114.1/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" > 
+  <env:Header>
+     <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+          <auth:AuthInfo>1000058d371f4aaba1a152d6e76276a60d05</auth:AuthInfo>
+           <auth:Language>zh-cn</auth:Language> 
+      </auth:Authentication>
+   <Language>zh-cn</Language> 
+   </env:Header>
+
+   <env:Body>
+   <rpc message-id="${#TestSuite#session-id}" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:xc="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <get>
+    <filter type="subtree">
+     <top xmlns="http://www.h3c.com/netconf/data:1.0" xmlns:h3c="http://www.h3c.com/netconf/base:1.0"  xmlns:reg="http://www.h3c.com/netconf/base:1.0">
+
+<DIM>
+  <ActivePercentage>
+    <Percentage></Percentage>
+  </ActivePercentage>
+</DIM>
+
+
+
+
+      </top>
+    </filter>
+   </get>
+   </rpc>
+</env:Body>
+</env:Envelope>
+]]></con:request><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="getDataTest" id="b54c3eaf-ac02-4616-9337-3732082371db"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="getDataTest" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.152.33/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" > 
+  <env:Header>
+     <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+          <auth:AuthInfo>100004631bb83d36bc971c6a24fea28fedac</auth:AuthInfo>
+           <auth:Language>zh-cn</auth:Language> 
+      </auth:Authentication>
+   <Language>zh-cn</Language> 
+   </env:Header>
+   <env:Body>
+   <rpc message-id="${#TestSuite#session-id}" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:xc="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <get>
+    <filter type="subtree">
+     <top xmlns="http://www.h3c.com/netconf/data:1.0" xmlns:h3c="http://www.h3c.com/netconf/base:1.0"  xmlns:reg="http://www.h3c.com/netconf/base:1.0">
+<Ifmgr>
+  <Interfaces>
+    <Interface>
+      <IfIndex></IfIndex>
+      <Name></Name>
+      
+    </Interface>
+  </Interfaces>
+</Ifmgr>
+
+
+
+
+      </top>
+    </filter>
+   </get>
+   </rpc>
+</env:Body>
+</env:Envelope>
+]]></con:request><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="getconfigTest" id="48d5ca02-dda2-4205-bf3c-f9108785544e"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="getconfigTest" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.152.29/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope" xmlns:urn="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="1" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>1000043d7255c75421a0a969a5660eeba6a0</auth:AuthInfo>
+         <auth:Language>en</auth:Language>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0">
+           <get-config>
+            <source> <running/></source>
+            <filter type="subtree">
+               <top xmlns="http://www.h3c.com/netconf/config:1.0" xmlns:web="http://www.h3c.com/netconf/base:1.0">
+
+
+
+
+                  
+              </top>
+            </filter>
+         </get-config>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="getSessions" id="79876ddc-bd3e-41f3-9b87-531f23d9e1ba"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="getSessions" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.11.212/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="true" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>100002fef6aa553904d8b5b2208e9cbed22c</auth:AuthInfo>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+        <get-sessions/>
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response" id="ee64bdf3-e3c4-4de8-9de9-2d980f7ab0f1"/><con:assertion type="XPath Match" id="8444a888-59b0-4a10-b439-2d48576aa74f" name="Match content of [ok]"><con:configuration><path>declare namespace ns1='urn:ietf:params:xml:ns:netconf:base:1.0';
+//ns1:rpc-reply[1]/ns1:ok[1]</path><content>&lt;ok xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:env="http://www.w3.org/2003/05/soap-envelope"/></content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="saveConfig" id="e230748f-85c5-4df8-8613-d91873f36626"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="saveConfig" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.11.212/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="true" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>1000033d26745be8461ab1ddf6e09edaa182</auth:AuthInfo>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+       <save>
+
+
+
+  </save>
+
+
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response" id="ee64bdf3-e3c4-4de8-9de9-2d980f7ab0f1"/><con:assertion type="XPath Match" id="8444a888-59b0-4a10-b439-2d48576aa74f" name="Match content of [ok]"><con:configuration><path>declare namespace ns1='urn:ietf:params:xml:ns:netconf:base:1.0';
+//ns1:rpc-reply[1]/ns1:ok[1]</path><content>&lt;ok xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:env="http://www.w3.org/2003/05/soap-envelope"/></content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="getStatisSession" id="a8ac2f41-00e2-49cf-885d-8aafb41cc6d6"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="getStatisSession" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.11.212/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="true" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>1000030bdbe1a34151cbfca1fe110b506c8f</auth:AuthInfo>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+   <get>
+
+<filter type='subtree'>
+
+<netconf-state xmlns='urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring'>
+     <getType/>
+
+</netconf-state>
+
+</filter>
+
+</get>
+
+
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response" id="ee64bdf3-e3c4-4de8-9de9-2d980f7ab0f1"/><con:assertion type="XPath Match" id="8444a888-59b0-4a10-b439-2d48576aa74f" name="Match content of [ok]"><con:configuration><path>declare namespace ns1='urn:ietf:params:xml:ns:netconf:base:1.0';
+//ns1:rpc-reply[1]/ns1:ok[1]</path><content>&lt;ok xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:env="http://www.w3.org/2003/05/soap-envelope"/></content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="request" name="rollback" id="8e32331b-29c7-4640-af0c-2e8d370d68bd"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>netconfBinding</con:interface><con:operation>rpc</con:operation><con:request name="rollback" id="07b9a011-632a-4ca3-a0e2-fa736f70c146"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.152.33/soap/netconf/</con:endpoint><con:request><![CDATA[<env:Envelope xmlns:env="http://www.w3.org/2003/05/soap-envelope">
+   <env:Header>
+      <auth:Authentication env:mustUnderstand="true" xmlns:auth="http://www.h3c.com/netconf/base:1.0">
+         <auth:AuthInfo>100003c276d9d4471f349e70b2d4f1191744</auth:AuthInfo>
+      </auth:Authentication>
+   </env:Header>
+   <env:Body>
+      <rpc message-id="101" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+  <rollback>
+    <file>3.cfg</file>
+  </rollback>
+
+
+
+      </rpc>
+   </env:Body>
+</env:Envelope>]]></con:request><con:assertion type="SOAP Response" id="ee64bdf3-e3c4-4de8-9de9-2d980f7ab0f1"/><con:assertion type="XPath Match" id="8444a888-59b0-4a10-b439-2d48576aa74f" name="Match content of [ok]"><con:configuration><path>declare namespace ns1='urn:ietf:params:xml:ns:netconf:base:1.0';
+//ns1:rpc-reply[1]/ns1:ok[1]</path><content>&lt;ok xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:web="urn:ietf:params:xml:ns:netconf:base:1.0" xmlns:env="http://www.w3.org/2003/05/soap-envelope"/></content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties><con:property><con:name>AuthInfo</con:name><con:value>100003800a43c42907da526f192dd9ba87cf</con:value></con:property></con:properties><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:requirements/><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:oAuth2ProfileContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting><con:sensitiveInformation/></con:soapui-project>
